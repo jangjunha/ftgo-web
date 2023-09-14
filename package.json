@@ -1,0 +1,5 @@
+{
+  "name": "ftgo-web",
+  "packageManager": "yarn@3.6.3",
+  "workspaces": ["packages/*"]
+}
