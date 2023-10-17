@@ -20,7 +20,10 @@ const Sidebar = (): React.ReactElement => {
           <button
             onClick={() =>
               loginWithRedirect({
-                authorizationParams: { login_hint: "courier@example.com" },
+                authorizationParams: {
+                  login_hint: "courier@example.com",
+                  max_age: 0,
+                },
               })
             }
             className="bg-blue-500 text-white mx-2"
