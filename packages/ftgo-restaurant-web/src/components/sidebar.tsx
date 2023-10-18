@@ -22,7 +22,7 @@ const Sidebar = (): React.ReactElement => {
               loginWithRedirect({
                 authorizationParams: {
                   login_hint: "restaurant@example.com",
-                  // max_age: 0,
+                  max_age: 0,
                 },
               })
             }
