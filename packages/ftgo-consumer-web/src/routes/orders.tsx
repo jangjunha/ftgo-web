@@ -82,9 +82,9 @@ const Orders = ({ consumerId }: { consumerId: string }): React.ReactElement => {
 
   const orders = data.consumer.orders;
   return (
-    <div>
+    <div className="bg-neutral-100 pb-16">
       <h3 className="p-2">주문 목록</h3>
-      <ul className="bg-neutral-100 py-2 space-y-0.5">
+      <ul className="space-y-0.5">
         {orders.map((order) => (
           <li key={order.id} className="bg-white p-2">
             <Link to={`./${order.id}/`}>

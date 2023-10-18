@@ -74,35 +74,33 @@ const UserSection = ({ id }: { id: string }): React.ReactElement => {
 
   console.log(data.courier.plan.actions);
   return (
-    <div className="p-2">
-      <h3>마이페이지</h3>
-      <section>
-        <p className="text-bold">{data.courier.id}</p>
-        <p>
-          available:{" "}
-          <span>{data.courier.available ? "영업중" : "영업종료"}</span>
+    <div className="bg-neutral-100 py-2">
+      <section className="p-4 mb-4 flex justify-center gap-4">
+        <p className="text-xl">
+          현재{" "}
+          <span className="font-bold">
+            {data.courier.available ? "주문 받는 중" : "영업 종료"}
+          </span>
         </p>
         <button
-          className="bg-neutral-100 hover:bg-neutral-200 border px-4"
+          className="bg-emerald-500 hover:bg-emerald-600 text-white px-4"
           onClick={async () => {
             await updateAvailability({
               variables: { id, available: !data.courier.available },
             });
           }}
         >
-          toggle availability
+          {data.courier.available ? "영업 종료" : "영업 시작"}
         </button>
       </section>
-      <section className="bg-neutral-100">
-        <div className="text-right">
-          <button
-            className="bg-neutral-300 hover:bg-neutral-400 px-2"
-            onClick={() => refetch()}
-          >
-            새로고침
-          </button>
-        </div>
-        <ul className="flex flex-col gap-y-0.5 py-4">
+      <section className="pb-16">
+        <button
+          className="bg-emerald-500 hover:bg-emerald-600 text-white w-full py-2 mb-2"
+          onClick={() => refetch()}
+        >
+          새로고침
+        </button>
+        <ul className="flex flex-col gap-y-0.5">
           {data.courier.plan.actions.map((action) => (
             <li
               key={`${action.delivery.id}-${action.type}`}
@@ -116,7 +114,7 @@ const UserSection = ({ id }: { id: string }): React.ReactElement => {
                   <ActionType type={action.type} />
                 </span>
                 <p>{action.address}</p>
-                <p>예상 시각: {new Date(action.time).toLocaleString()}</p>
+                <p>예정 시각: {new Date(action.time).toLocaleString()}</p>
               </div>
               <div className="flex">
                 {action.type == DeliveryAction.Pickup && (

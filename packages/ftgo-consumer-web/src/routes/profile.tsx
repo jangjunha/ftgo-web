@@ -51,7 +51,7 @@ const UserSection = ({ id }: { id: string }): React.ReactElement => {
         잔액: <span>{data.consumer.account.balance.amount}</span>원
       </p>
       <button
-        className="bg-neutral-100 hover:bg-neutral-200 border px-4"
+        className="bg-orange-500 text-white hover:bg-orange-600 px-4"
         onClick={async () => {
           await deposit();
           await refetch();

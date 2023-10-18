@@ -58,13 +58,13 @@ const Tickets = ({
   const [preparingTicket] = useMutation(PREPARING_TICKET);
   const [readyForPickupTicket] = useMutation(READY_FOR_PICKUP_TICKET);
 
-  const buttonCls = "w-full bg-blue-500 text-white";
+  const buttonCls = "w-full bg-violet-500 text-white";
 
   return (
-    <div className="bg-neutral-100">
+    <div className="bg-neutral-100 pb-16">
       <h3 className="m-2">주문 목록</h3>
       {tickets != null && (
-        <div className="py-2">
+        <div>
           <button
             className={buttonCls}
             onClick={() =>
@@ -105,7 +105,7 @@ const Tickets = ({
                   <div>
                     {state == TicketState.AwaitingAcceptance && (
                       <button
-                        className="bg-blue-500 text-white h-full p-2"
+                        className="bg-fuchsia-500 text-white h-full p-2"
                         onClick={async () => {
                           const minutes = parseInt(
                             prompt("조리 시간 (분)", "15") ?? "",
@@ -128,7 +128,7 @@ const Tickets = ({
                     )}
                     {state == TicketState.Accepted && (
                       <button
-                        className="bg-violet-500 text-white h-full p-2"
+                        className="bg-pink-500 text-white h-full p-2"
                         onClick={async () => {
                           await preparingTicket({ variables: { id } });
                         }}

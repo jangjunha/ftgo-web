@@ -18,7 +18,7 @@ const Index = (): React.ReactElement => {
     <div className="bg-neutral-100 pb-16">
       <h3 className="p-2">가게 목록</h3>
       {loading && "불러오는 중"}
-      <ul className="flex flex-col">
+      <ul className="flex flex-col gap-y-0.5">
         {data?.restaurants.map((restaurant) => (
           <li key={restaurant.id} className="flex flex-col">
             <Link

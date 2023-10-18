@@ -44,7 +44,7 @@ const Menu = ({
   const totalCount = value.reduce((acc, e) => acc + e.quantity, 0);
   return (
     <div>
-      <ul className="flex flex-col gap-y-2 my-4">
+      <ul className="flex flex-col gap-y-2 px-2 my-4">
         {menuItems.map((menu) => (
           <li key={menu.id} className="flex items-center text-lg">
             <div className="flex-1">
@@ -75,7 +75,7 @@ const Menu = ({
       </ul>
       <button
         className={classNames(
-          "w-full text-white bg-blue-500 disabled:bg-blue-200 p-2",
+          "w-full text-white bg-orange-500 disabled:bg-orange-200 p-2",
         )}
         disabled={totalCount <= 0}
         onClick={() => onSubmit?.(value.filter((e) => e.quantity > 0))}

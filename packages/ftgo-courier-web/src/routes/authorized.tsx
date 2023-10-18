@@ -22,7 +22,7 @@ const Authorized = (): React.ReactElement => {
         </p>
         <button
           onClick={() => logout()}
-          className="px-2 bg-blue-500 text-white"
+          className="px-2 bg-emerald-500 text-white"
         >
           로그인 세션 초기화
         </button>
