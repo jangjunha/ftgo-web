@@ -2,6 +2,10 @@
 
 [FTGO][ftgo] 프로젝트의 웹사이트입니다.
 
+* 소비자 웹사이트: <https://consumer.ftgo.jangjunha.me>
+* 매장 웹사이트:  <https://restaurant.ftgo.jangjunha.me>
+* 배달원 웹사이트:  <https://courier.ftgo.jangjunha.me>
+
 ## Prerequisites
 
 * Yarn berry
