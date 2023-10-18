@@ -100,6 +100,9 @@ const UserSection = ({ id }: { id: string }): React.ReactElement => {
         >
           새로고침
         </button>
+        {data.courier.plan.actions.length === 0 && (
+          <div className="text-center p-4">현재 배차된 주문이 없습니다.</div>
+        )}
         <ul className="flex flex-col gap-y-0.5">
           {data.courier.plan.actions.map((action) => (
             <li
@@ -166,6 +169,17 @@ const UserSection = ({ id }: { id: string }): React.ReactElement => {
             </li>
           ))}
         </ul>
+        <footer className="mt-4 p-2 text-sm">
+          <h4 className="font-bold">알림</h4>
+          <p>
+            * 매장에서 주문을 <b>승인</b>했을 때 배차가 이루어집니다.
+          </p>
+          <p>
+            * 현재 영업 중인 <b>무작위</b> 배달원에게 배차됩니다.
+          </p>
+          <p>* 매장에서 픽업 준비 버튼을 누른 이후 픽업이 가능합니다.</p>
+          <p>* 배송 완료된 주문은 목록에서 삭제됩니다.</p>
+        </footer>
       </section>
     </div>
   );
