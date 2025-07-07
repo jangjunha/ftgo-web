@@ -139,10 +139,7 @@ export class ApiClient {
   ): Promise<schemas.CreateUserResponse> {
     return this.request("/users", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: this.createFormData(request),
+      body: JSON.stringify(request),
       schema: schemas.CreateUserResponseSchema,
     });
   }
