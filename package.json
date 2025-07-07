@@ -5,5 +5,8 @@
   "keywords": [],
   "author": "jangjunha <hi@jangjunha.me>",
   "license": "MIT",
-  "packageManager": "pnpm@10.12.4"
+  "packageManager": "pnpm@10.12.4",
+  "devDependencies": {
+    "@biomejs/biome": "2.0.6"
+  }
 }
