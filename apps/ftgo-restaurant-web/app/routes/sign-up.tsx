@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import type { Route } from "./+types/sign-up";
 import { users } from "@ftgo/util";
 import { useAuth } from "../lib/auth-context";
+import { RestaurantLayout } from "~/components/RestaurantLayout";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -30,7 +31,7 @@ export default function SignUp() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (password !== confirmPassword) {
       alert("Passwords don't match");
       return;
@@ -43,8 +44,8 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8">
+    <RestaurantLayout>
+      <div className="max-w-md mx-auto my-32 space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Create your account
@@ -125,6 +126,6 @@ export default function SignUp() {
           </div>
         </form>
       </div>
-    </div>
+    </RestaurantLayout>
   );
 }

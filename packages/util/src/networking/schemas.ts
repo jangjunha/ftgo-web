@@ -55,8 +55,18 @@ export const CreateUserResponseSchema = v.object({
   created_at: DateTimeSchema,
 });
 
+export const UserInfoResponseSchema = v.object({
+  id: UuidSchema,
+  username: v.string(),
+  created_at: DateTimeSchema,
+  granted_restaurants: v.array(UuidSchema),
+  granted_consumers: v.array(UuidSchema),
+  granted_couriers: v.array(UuidSchema),
+});
+
 export type CreateUserRequest = v.InferOutput<typeof CreateUserRequestSchema>;
 export type CreateUserResponse = v.InferOutput<typeof CreateUserResponseSchema>;
+export type UserInfoResponse = v.InferOutput<typeof UserInfoResponseSchema>;
 
 // Consumer schemas
 export const CreateConsumerRequestSchema = v.object({

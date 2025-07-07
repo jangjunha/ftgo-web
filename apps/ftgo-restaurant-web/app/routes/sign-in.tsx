@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import type { Route } from "./+types/sign-in";
 import { useAuth } from "../lib/auth-context";
+import { RestaurantLayout } from "~/components/RestaurantLayout";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -25,7 +26,7 @@ export default function SignIn() {
 
     try {
       await login(username, password);
-      navigate("/restaurants");
+      navigate("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to sign in");
     } finally {
@@ -34,8 +35,8 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8">
+    <RestaurantLayout>
+      <div className="max-w-md mx-auto my-32 space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to your account
@@ -84,11 +85,7 @@ export default function SignIn() {
             </div>
           </div>
 
-          {error && (
-            <div className="text-red-600 text-sm">
-              {error}
-            </div>
-          )}
+          {error && <div className="text-red-600 text-sm">{error}</div>}
 
           <div>
             <button
@@ -101,6 +98,6 @@ export default function SignIn() {
           </div>
         </form>
       </div>
-    </div>
+    </RestaurantLayout>
   );
 }

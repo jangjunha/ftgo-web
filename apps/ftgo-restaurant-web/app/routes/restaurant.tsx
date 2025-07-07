@@ -1,8 +1,8 @@
-import { Outlet, useParams, Link } from "react-router";
+import { Outlet, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import type { Route } from "./+types/restaurant";
 import { restaurants } from "@ftgo/util";
-import { useAuth } from "../lib/auth-context";
+import { RestaurantLayout } from "../components/RestaurantLayout";
 
 export function meta({ params }: Route.MetaArgs) {
   return [
@@ -13,7 +13,6 @@ export function meta({ params }: Route.MetaArgs) {
 
 export default function Restaurant() {
   const { restaurantId } = useParams();
-  const { user, logout } = useAuth();
 
   const restaurantQuery = useQuery({
     queryKey: ["restaurant", restaurantId],
@@ -23,72 +22,51 @@ export default function Restaurant() {
 
   if (restaurantQuery.isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading restaurant...</div>
-      </div>
+      <RestaurantLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">Loading restaurant...</div>
+        </div>
+      </RestaurantLayout>
     );
   }
 
   if (restaurantQuery.error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-red-600">
-          Error loading restaurant: {restaurantQuery.error.message}
+      <RestaurantLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-red-600">
+            Error loading restaurant: {restaurantQuery.error.message}
+          </div>
         </div>
-      </div>
+      </RestaurantLayout>
     );
   }
 
   const restaurant = restaurantQuery.data;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center space-x-4">
-              <Link
-                to="/restaurants"
-                className="text-indigo-600 hover:text-indigo-800"
-              >
-                ← Back to Restaurants
-              </Link>
-              <h1 className="text-xl font-semibold">{restaurant?.name}</h1>
+    <RestaurantLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">{restaurant?.name}</h1>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Address</h3>
+              <p className="text-gray-900">{restaurant?.address}</p>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">Welcome, {user?.username}</span>
-              <button
-                onClick={logout}
-                className="text-sm text-red-600 hover:text-red-800"
-              >
-                Sign out
-              </button>
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Menu Items</h3>
+              <p className="text-gray-900">{restaurant?.menu_items.length} items</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Status</h3>
+              <p className="text-green-600 font-medium">Active</p>
             </div>
           </div>
         </div>
+
+        <Outlet />
       </div>
-
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="mb-6">
-            <p className="text-gray-600">{restaurant?.address}</p>
-            <p className="text-sm text-gray-500">
-              {restaurant?.menu_items.length} menu items
-            </p>
-          </div>
-
-          <nav className="flex space-x-8 mb-6">
-            <Link
-              to={`/restaurants/${restaurantId}`}
-              className="text-indigo-600 hover:text-indigo-800 font-medium border-b-2 border-indigo-600 pb-2"
-            >
-              Kitchen Tickets
-            </Link>
-          </nav>
-
-          <Outlet />
-        </div>
-      </div>
-    </div>
+    </RestaurantLayout>
   );
 }

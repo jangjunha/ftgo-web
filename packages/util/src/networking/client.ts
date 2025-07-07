@@ -144,6 +144,13 @@ export class ApiClient {
     });
   }
 
+  async getCurrentUser(): Promise<schemas.UserInfoResponse> {
+    return this.request("/me", {
+      method: "GET",
+      schema: schemas.UserInfoResponseSchema,
+    });
+  }
+
   // Consumer endpoints
   async createConsumer(
     request: schemas.CreateConsumerRequest,
@@ -359,6 +366,7 @@ export const auth = {
 export const users = {
   create: (request: schemas.CreateUserRequest) =>
     defaultClient.createUser(request),
+  getCurrentUser: () => defaultClient.getCurrentUser(),
 };
 
 export const consumers = {
