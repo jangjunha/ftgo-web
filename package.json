@@ -1,0 +1,9 @@
+{
+  "name": "ftgo-web",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "jangjunha <hi@jangjunha.me>",
+  "license": "MIT",
+  "packageManager": "pnpm@10.12.4"
+}
