@@ -49,6 +49,16 @@ export class ApiClient {
     this.token = token;
   }
 
+  private createFormData(data: Record<string, any>): string {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== undefined && value !== null) {
+        params.append(key, String(value));
+      }
+    }
+    return params.toString();
+  }
+
   private async request<T>(
     endpoint: string,
     options: RequestInit & { schema?: v.BaseSchema<any, any, any> } = {},
@@ -115,7 +125,10 @@ export class ApiClient {
   ): Promise<schemas.IssueTokenResponse> {
     return this.request("/auth/token", {
       method: "POST",
-      body: JSON.stringify(request),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: this.createFormData(request),
       schema: schemas.IssueTokenResponseSchema,
     });
   }
@@ -126,7 +139,10 @@ export class ApiClient {
   ): Promise<schemas.CreateUserResponse> {
     return this.request("/users", {
       method: "POST",
-      body: JSON.stringify(request),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: this.createFormData(request),
       schema: schemas.CreateUserResponseSchema,
     });
   }

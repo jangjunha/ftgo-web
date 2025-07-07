@@ -7,7 +7,17 @@ import * as v from "valibot";
 
 // Common schemas
 export const UuidSchema = v.pipe(v.string(), v.uuid());
-export const DateTimeSchema = v.pipe(v.string(), v.isoDateTime());
+
+// Custom date-time schema that handles nanosecond precision
+export const DateTimeSchema = v.pipe(
+  v.string(),
+  v.check((value) => {
+    // Try to parse as Date to validate it's a valid timestamp
+    const date = new Date(value);
+    return !isNaN(date.getTime());
+  }, "Invalid date-time format")
+);
+
 export const PriceSchema = v.string(); // Price as string for precision
 
 // Error responses
