@@ -8,7 +8,8 @@ export default [
   route("restaurants", "routes/restaurants.tsx"),
   route("restaurants/create", "routes/restaurants/create.tsx"),
   route("restaurants/:restaurantId", "routes/restaurant.tsx", [
-    index("routes/restaurant/tickets.tsx"),
+    index("routes/restaurant/home.tsx"),
+    route("tickets", "routes/restaurant/tickets.tsx"),
     route("tickets/:ticketId", "routes/restaurant/ticket-detail.tsx"),
   ]),
 ] satisfies RouteConfig;

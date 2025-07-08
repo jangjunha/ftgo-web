@@ -196,12 +196,18 @@ export const KitchenTicketSchema = v.object({
   ready_for_pickup_at: v.nullable(DateTimeSchema),
 });
 
+export const KitchenTicketEdgeSchema = v.object({
+  node: KitchenTicketSchema,
+  cursor: v.string(),
+});
+
 export const ListTicketsResponseSchema = v.object({
-  tickets: v.array(KitchenTicketSchema),
+  edges: v.array(KitchenTicketEdgeSchema),
 });
 
 export type TicketLineItem = v.InferOutput<typeof TicketLineItemSchema>;
 export type KitchenTicket = v.InferOutput<typeof KitchenTicketSchema>;
+export type KitchenTicketEdge = v.InferOutput<typeof KitchenTicketEdgeSchema>;
 export type ListTicketsResponse = v.InferOutput<typeof ListTicketsResponseSchema>;
 
 // Delivery schemas

@@ -22,15 +22,17 @@ const Restaurant = ({ id }: { id: string }) => {
   }
   return (
     <Link to={`/restaurants/${id}`}>
-      {!data && id}
-      {data && (
-        <>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            {data.name}
-          </h3>
-          <p className="text-sm text-gray-600 mb-1">{data.address}</p>
-        </>
-      )}
+      <div className="px-4 py-2">
+        {!data && id}
+        {data && (
+          <>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {data.name}
+            </h3>
+            <p className="text-sm text-gray-600 mb-1">{data.address}</p>
+          </>
+        )}
+      </div>
     </Link>
   );
 };
@@ -43,7 +45,8 @@ export default function Restaurants() {
 
   return (
     <RestaurantLayout>
-      <div className="m-4 space-y-6">
+      <div className="py-4 bg-violet-100 min-h-full">
+        <h1 className="mx-4 mb-2 font-bold">Restaurants</h1>
         {meQuery.data?.granted_restaurants.length === 0 && (
           <div className="text-center py-12">
             <h3 className="text-lg font-medium text-gray-900">
@@ -56,16 +59,13 @@ export default function Restaurants() {
         )}
         {meQuery.data && (
           <div>
-            <ul>
+            <ul className="space-y-6">
               {meQuery.data.granted_restaurants.map((id) => (
-                <li key={id}>
+                <li key={id} className="bg-white">
                   <Restaurant key={id} id={id} />
                 </li>
               ))}
             </ul>
-            <div className="text-center">
-              <Link to="/restaurants/create">Create New Restaurant</Link>
-            </div>
           </div>
         )}
         {meQuery.isLoading && (
@@ -73,6 +73,11 @@ export default function Restaurants() {
             Loading your restaurants...
           </div>
         )}
+        <div className="m-8 text-center">
+          <Link to="/restaurants/create" className="text-blue-500 underline">
+            Create New Restaurant
+          </Link>
+        </div>
       </div>
     </RestaurantLayout>
   );

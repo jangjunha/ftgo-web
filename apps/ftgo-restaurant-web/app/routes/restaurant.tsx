@@ -1,4 +1,4 @@
-import { Outlet, useParams } from "react-router";
+import { Link, Outlet, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import type { Route } from "./+types/restaurant";
 import { restaurants } from "@ftgo/util";
@@ -45,28 +45,32 @@ export default function Restaurant() {
   const restaurant = restaurantQuery.data;
 
   return (
-    <RestaurantLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">{restaurant?.name}</h1>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div>
-              <h3 className="text-sm font-medium text-gray-500">Address</h3>
-              <p className="text-gray-900">{restaurant?.address}</p>
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-gray-500">Menu Items</h3>
-              <p className="text-gray-900">{restaurant?.menu_items.length} items</p>
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-gray-500">Status</h3>
-              <p className="text-green-600 font-medium">Active</p>
-            </div>
+    <RestaurantLayout
+      sidebar={
+        <div className="py-4 mb-4">
+          <Link to="/restaurants" className="text-sm text-gray-600 px-2">
+            ‹ Restaurants
+          </Link>
+          {restaurant && (
+            <>
+              <div className="bg-violet-200 p-2">
+                <h1 className="font-bold text-gray-900">{restaurant?.name}</h1>
+                <p className="text-sm text-gray-600">{restaurant.address}</p>
+              </div>
+            </>
+          )}
+          <div className="mt-4">
+            <p className="text-gray-500 font-bold text-sm mx-2 my-1">Menu</p>
+            <ul className="flex flex-col divide-y [&_li]:flex [&_li]:flex-1 [&_li]:bg-white [&_a]:flex-1 [&_a]:p-2">
+              <li>
+                <Link to={`/restaurants/${restaurantId}/tickets`}>Tickets</Link>
+              </li>
+            </ul>
           </div>
         </div>
-
-        <Outlet />
-      </div>
+      }
+    >
+      <Outlet />
     </RestaurantLayout>
   );
 }
