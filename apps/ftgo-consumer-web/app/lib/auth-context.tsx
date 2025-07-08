@@ -42,6 +42,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
+    if (user) {
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith(`ftgo_cart_${user.consumerId}_`)) {
+          localStorage.removeItem(key);
+        }
+      });
+    }
     setUser(null);
     defaultClient.setToken(null);
     localStorage.removeItem("ftgo_consumer_user");

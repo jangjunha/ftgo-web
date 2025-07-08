@@ -35,7 +35,7 @@ export default function Restaurants() {
                 <li key={restaurant.id}>
                   <Link
                     key={restaurant.id}
-                    to={`/restaurants/${restaurant.id}`}
+                    to={`/restaurant/${restaurant.id}`}
                     className="p-4 flex flex-col bg-white hover:bg-orange-50"
                   >
                     <p className="font-bold">{restaurant.name}</p>

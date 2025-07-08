@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { Route } from "./+types/layout";
 import { restaurants } from "@ftgo/util";
 import { ConsumerLayout } from "~/components/ConsumerLayout";
+import { CartProvider, useCart } from "~/lib/cart-context";
 
 export function meta({ params }: Route.MetaArgs) {
   return [
@@ -11,7 +12,7 @@ export function meta({ params }: Route.MetaArgs) {
   ];
 }
 
-export default function Restaurant() {
+function RestaurantContent() {
   const { restaurantId } = useParams();
 
   const restaurantQuery = useQuery({
@@ -19,6 +20,7 @@ export default function Restaurant() {
     queryFn: () => restaurants.get(restaurantId!),
     enabled: !!restaurantId,
   });
+  const cart = useCart();
 
   if (restaurantQuery.isLoading) {
     return (
@@ -63,10 +65,15 @@ export default function Restaurant() {
             <p className="text-gray-500 font-bold text-sm mx-2 my-1">Menu</p>
             <ul className="flex flex-col divide-y divide-orange-100 [&_li]:flex [&_li]:flex-1 [&_li]:bg-white [&_a]:flex-1 [&_a]:p-2">
               <li>
-                <Link to={`/restaurants/${restaurantId}`}>Menu</Link>
+                <Link to={`/restaurant/${restaurantId}`}>Menu</Link>
               </li>
               <li>
-                <Link to={`/restaurants/${restaurantId}/cart`}>Cart</Link>
+                <Link to={`/restaurant/${restaurantId}/cart`}>
+                  Cart{" "}
+                  <span className="bg-red-500 text-white text-xs px-1 rounded-2xl">
+                    {cart.getTotalItems()}
+                  </span>
+                </Link>
               </li>
             </ul>
           </div>
@@ -75,5 +82,19 @@ export default function Restaurant() {
     >
       <Outlet />
     </ConsumerLayout>
+  );
+}
+
+export default function Restaurant() {
+  const { restaurantId } = useParams();
+
+  if (!restaurantId) {
+    return <div>Restaurant ID not found</div>;
+  }
+
+  return (
+    <CartProvider restaurantId={restaurantId}>
+      <RestaurantContent />
+    </CartProvider>
   );
 }
