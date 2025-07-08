@@ -62,13 +62,16 @@ export class ApiClient {
   private async request<T>(
     endpoint: string,
     options: RequestInit & { schema?: v.BaseSchema<any, any, any> } = {},
+    override_token?: string,
   ): Promise<T> {
     const url = `${this.config.baseUrl}${endpoint}`;
     const { schema, ...requestOptions } = options;
 
+    const token = override_token ?? this.token;
+
     const headers = {
       ...this.config.defaultHeaders,
-      ...(this.token && { Authorization: `Bearer ${this.token}` }),
+      ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers,
     };
 
@@ -144,32 +147,52 @@ export class ApiClient {
     });
   }
 
-  async getCurrentUser(): Promise<schemas.UserInfoResponse> {
-    return this.request("/me", {
-      method: "GET",
-      schema: schemas.UserInfoResponseSchema,
-    });
+  async getCurrentUser(
+    access_token?: string,
+  ): Promise<schemas.UserInfoResponse> {
+    return this.request(
+      "/me",
+      {
+        method: "GET",
+        schema: schemas.UserInfoResponseSchema,
+      },
+      access_token,
+    );
   }
 
   // Consumer endpoints
   async createConsumer(
     request: schemas.CreateConsumerRequest,
+    access_token?: string,
   ): Promise<schemas.CreateConsumerResponse> {
-    return this.request("/consumers", {
-      method: "POST",
-      body: JSON.stringify(request),
-      schema: schemas.CreateConsumerResponseSchema,
-    });
+    return this.request(
+      "/consumers",
+      {
+        method: "POST",
+        body: JSON.stringify(request),
+        schema: schemas.CreateConsumerResponseSchema,
+      },
+      access_token,
+    );
   }
 
-  async getConsumer(id: string): Promise<schemas.Consumer> {
-    return this.request(`/consumers/${id}`, {
-      method: "GET",
-      schema: schemas.ConsumerSchema,
-    });
+  async getConsumer(
+    id: string,
+    access_token?: string,
+  ): Promise<schemas.Consumer> {
+    return this.request(
+      `/consumers/${id}`,
+      {
+        method: "GET",
+        schema: schemas.ConsumerSchema,
+      },
+      access_token,
+    );
   }
 
-  async getAccount(consumerId: string): Promise<schemas.AccountDetailsResponse> {
+  async getAccount(
+    consumerId: string,
+  ): Promise<schemas.AccountDetailsResponse> {
     return this.request(`/consumers/${consumerId}/account`, {
       method: "GET",
       schema: schemas.AccountDetailsResponseSchema,
@@ -230,7 +253,8 @@ export class ApiClient {
     } = {},
   ): Promise<schemas.ListTicketsResponse> {
     const params = new URLSearchParams();
-    if (options.first !== undefined) params.set("first", options.first.toString());
+    if (options.first !== undefined)
+      params.set("first", options.first.toString());
     if (options.after) params.set("after", options.after);
     if (options.last !== undefined) params.set("last", options.last.toString());
     if (options.before) params.set("before", options.before);
@@ -258,30 +282,39 @@ export class ApiClient {
     restaurantId: string,
     ticketId: string,
   ): Promise<schemas.KitchenTicket> {
-    return this.request(`/restaurants/${restaurantId}/tickets/${ticketId}/accept`, {
-      method: "POST",
-      schema: schemas.KitchenTicketSchema,
-    });
+    return this.request(
+      `/restaurants/${restaurantId}/tickets/${ticketId}/accept`,
+      {
+        method: "POST",
+        schema: schemas.KitchenTicketSchema,
+      },
+    );
   }
 
   async preparingTicket(
     restaurantId: string,
     ticketId: string,
   ): Promise<schemas.KitchenTicket> {
-    return this.request(`/restaurants/${restaurantId}/tickets/${ticketId}/preparing`, {
-      method: "POST",
-      schema: schemas.KitchenTicketSchema,
-    });
+    return this.request(
+      `/restaurants/${restaurantId}/tickets/${ticketId}/preparing`,
+      {
+        method: "POST",
+        schema: schemas.KitchenTicketSchema,
+      },
+    );
   }
 
   async readyForPickupTicket(
     restaurantId: string,
     ticketId: string,
   ): Promise<schemas.KitchenTicket> {
-    return this.request(`/restaurants/${restaurantId}/tickets/${ticketId}/ready`, {
-      method: "POST",
-      schema: schemas.KitchenTicketSchema,
-    });
+    return this.request(
+      `/restaurants/${restaurantId}/tickets/${ticketId}/ready`,
+      {
+        method: "POST",
+        schema: schemas.KitchenTicketSchema,
+      },
+    );
   }
 
   // Delivery endpoints
@@ -309,14 +342,18 @@ export class ApiClient {
     });
   }
 
-  async getCourierPlan(courierId: string): Promise<schemas.CourierPlanResponse> {
+  async getCourierPlan(
+    courierId: string,
+  ): Promise<schemas.CourierPlanResponse> {
     return this.request(`/couriers/${courierId}/plan`, {
       method: "GET",
       schema: schemas.CourierPlanResponseSchema,
     });
   }
 
-  async getDeliveryStatus(orderId: string): Promise<schemas.DeliveryStatusResponse> {
+  async getDeliveryStatus(
+    orderId: string,
+  ): Promise<schemas.DeliveryStatusResponse> {
     return this.request(`/orders/${orderId}/delivery`, {
       method: "GET",
       schema: schemas.DeliveryStatusResponseSchema,
@@ -342,12 +379,12 @@ function getBaseUrl(): string {
   if (typeof window !== "undefined") {
     return (window as any).__FTGO_API_URL__ || "http://localhost:8100";
   }
-  
+
   // For Node.js environments
   if (typeof process !== "undefined" && process.env) {
     return process.env.FTGO_API_URL || "http://localhost:8100";
   }
-  
+
   // Fallback
   return "http://localhost:8100";
 }
@@ -366,13 +403,15 @@ export const auth = {
 export const users = {
   create: (request: schemas.CreateUserRequest) =>
     defaultClient.createUser(request),
-  getCurrentUser: () => defaultClient.getCurrentUser(),
+  getCurrentUser: (access_token?: string) =>
+    defaultClient.getCurrentUser(access_token),
 };
 
 export const consumers = {
-  create: (request: schemas.CreateConsumerRequest) =>
-    defaultClient.createConsumer(request),
-  get: (id: string) => defaultClient.getConsumer(id),
+  create: (request: schemas.CreateConsumerRequest, access_token?: string) =>
+    defaultClient.createConsumer(request, access_token),
+  get: (id: string, access_token?: string) =>
+    defaultClient.getConsumer(id, access_token),
   getAccount: (consumerId: string) => defaultClient.getAccount(consumerId),
 };
 
@@ -390,8 +429,10 @@ export const orders = {
 };
 
 export const kitchen = {
-  listTickets: (restaurantId: string, options?: Parameters<typeof defaultClient.listTickets>[1]) =>
-    defaultClient.listTickets(restaurantId, options),
+  listTickets: (
+    restaurantId: string,
+    options?: Parameters<typeof defaultClient.listTickets>[1],
+  ) => defaultClient.listTickets(restaurantId, options),
   getTicket: (restaurantId: string, ticketId: string) =>
     defaultClient.getTicket(restaurantId, ticketId),
   acceptTicket: (restaurantId: string, ticketId: string) =>
@@ -405,9 +446,12 @@ export const kitchen = {
 export const delivery = {
   createCourier: () => defaultClient.createCourier(),
   getCourier: (courierId: string) => defaultClient.getCourier(courierId),
-  updateCourierAvailability: (courierId: string, request: schemas.UpdateCourierAvailabilityRequest) =>
-    defaultClient.updateCourierAvailability(courierId, request),
-  getCourierPlan: (courierId: string) => defaultClient.getCourierPlan(courierId),
+  updateCourierAvailability: (
+    courierId: string,
+    request: schemas.UpdateCourierAvailabilityRequest,
+  ) => defaultClient.updateCourierAvailability(courierId, request),
+  getCourierPlan: (courierId: string) =>
+    defaultClient.getCourierPlan(courierId),
   getStatus: (orderId: string) => defaultClient.getDeliveryStatus(orderId),
   pickup: (deliveryId: string) => defaultClient.pickupDelivery(deliveryId),
   dropoff: (deliveryId: string) => defaultClient.dropoffDelivery(deliveryId),

@@ -28,7 +28,7 @@ export const AppLayout = ({
   children,
 }: {
   theme: Theme;
-  username?: string;
+  username?: React.ReactNode;
   title: React.ReactNode;
   sidebar?: React.ReactNode;
   children?: React.ReactNode;
