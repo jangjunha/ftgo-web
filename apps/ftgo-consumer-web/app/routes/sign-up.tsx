@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router";
 import { useMutation } from "@tanstack/react-query";
 import type { Route } from "./+types/sign-up";
 import { users } from "@ftgo/util";
-import { useAuth } from "../lib/auth-context";
 import { ConsumerLayout } from "~/components/ConsumerLayout";
 
 export function meta({}: Route.MetaArgs) {
@@ -18,13 +17,10 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const createUserMutation = useMutation({
     mutationFn: users.create,
     onSuccess: async () => {
-      // Auto-login after successful registration
-      await login(username, password);
       navigate("/");
     },
   });
