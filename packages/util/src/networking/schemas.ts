@@ -265,8 +265,12 @@ export type ListTicketsResponse = v.InferOutput<
 >;
 
 // Delivery schemas
+export const CourierActionTypeSchema = v.picklist([
+  "PICKUP",
+  "DROPOFF",
+] as const);
 export const CourierActionResponseSchema = v.object({
-  action_type: v.string(),
+  action_type: CourierActionTypeSchema,
   delivery_id: UuidSchema,
   address: v.string(),
   scheduled_time: DateTimeSchema,
@@ -300,6 +304,7 @@ export const DeliveryStatusResponseSchema = v.object({
   pickup_time: v.nullable(DateTimeSchema),
 });
 
+export type CourierActionType = v.InferOutput<typeof CourierActionTypeSchema>;
 export type CourierActionResponse = v.InferOutput<
   typeof CourierActionResponseSchema
 >;

@@ -371,11 +371,17 @@ export class ApiClient {
   }
 
   // Delivery endpoints
-  async createCourier(): Promise<schemas.CreateCourierResponse> {
-    return this.request("/couriers", {
-      method: "POST",
-      schema: schemas.CreateCourierResponseSchema,
-    });
+  async createCourier(
+    access_token?: string,
+  ): Promise<schemas.CreateCourierResponse> {
+    return this.request(
+      "/couriers",
+      {
+        method: "POST",
+        schema: schemas.CreateCourierResponseSchema,
+      },
+      access_token,
+    );
   }
 
   async getCourier(courierId: string): Promise<schemas.CourierDetailsResponse> {
@@ -503,7 +509,8 @@ export const kitchen = {
 };
 
 export const delivery = {
-  createCourier: () => defaultClient.createCourier(),
+  createCourier: (access_token?: string) =>
+    defaultClient.createCourier(access_token),
   getCourier: (courierId: string) => defaultClient.getCourier(courierId),
   updateCourierAvailability: (
     courierId: string,

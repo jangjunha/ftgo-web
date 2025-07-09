@@ -42,6 +42,11 @@ export const AppLayout = ({
           <Link to="/">{title}</Link>
         </h1>
         <div className="mx-2">
+          {username === undefined && (
+            <div className="flex gap-4">
+              <Link to="/sign-in">로그인</Link>
+            </div>
+          )}
           {username !== undefined && (
             <div className="flex gap-4">
               <div>{username}</div>
