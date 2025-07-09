@@ -1,0 +1,40 @@
+name: Deploy to Firebase Hosting on merge
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build_and_deploy:
+    strategy:
+      matrix:
+        project:
+          - ftgo-restaurant-web
+          - ftgo-consumer-web
+          - ftgo-courier-web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm --filter ${{ matrix.project }} build
+
+      - name: Deploy
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FTGO_JANGJUNHA }}
+          channelId: live
+          projectId: ftgo-jangjunha
+          target: ${{ matrix.project }}

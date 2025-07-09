@@ -1,0 +1,49 @@
+{
+  "hosting": [
+    {
+      "site": "ftgo-restaurant-web",
+      "public": "apps/ftgo-restaurant-web/build/client",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "site": "ftgo-consumer-web",
+      "public": "apps/ftgo-consumer-web/build/client",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "site": "ftgo-courier-web",
+      "public": "apps/ftgo-courier-web/build/client",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
+}
