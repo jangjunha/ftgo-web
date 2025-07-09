@@ -30,7 +30,7 @@ jobs:
       - name: Build
         run: pnpm --filter ${{ matrix.project }} build
         env:
-          FTGO_API_URL: https://api.ftgo.jangjunha.me
+          VITE_FTGO_API_URL: https://api.ftgo.jangjunha.me
 
       - name: Deploy
         uses: FirebaseExtended/action-hosting-deploy@v0

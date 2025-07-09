@@ -27,7 +27,7 @@ cp .env.dist .env
 2. Update `.env` with your backend configuration:
 ```bash
 # FTGO API Backend URL
-FTGO_API_URL=http://localhost:8100
+VITE_FTGO_API_URL=http://localhost:8100
 
 # Development settings
 NODE_ENV=development
@@ -39,7 +39,7 @@ pnpm install
 ```
 
 ### Environment Variables
-- **FTGO_API_URL**: URL of the FTGO Rust backend (default: http://localhost:8100)
+- **VITE_FTGO_API_URL**: URL of the FTGO Rust backend (default: http://localhost:8100)
 - **NODE_ENV**: Environment mode (development/production)
 
 ## Development Commands
@@ -181,7 +181,7 @@ Note: Current Docker configuration assumes npm but project uses pnpm (may need a
 - **Location**: `../ftgo-rust` (relative to this repository)
 - **Repository**: https://github.com/jangjunha/ftgo-rust
 - **Connection**: Each web app connects to the Rust backend API endpoints via environment variable
-- **Configuration**: Set `FTGO_API_URL` in `.env` file (defaults to http://localhost:8100)
+- **Configuration**: Set `VITE_FTGO_API_URL` in `.env` file (defaults to http://localhost:8100)
 - **Development**: Ensure the Rust backend is running locally during development
 
 ## Important Notes

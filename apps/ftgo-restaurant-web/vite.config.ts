@@ -6,7 +6,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
   define: {
-    // Expose FTGO_API_URL to the browser
-    '__FTGO_API_URL__': JSON.stringify(process.env.FTGO_API_URL),
+    // Expose VITE_FTGO_API_URL to the browser
+    __FTGO_API_URL__: JSON.stringify(process.env.VITE_FTGO_API_URL),
   },
 });

@@ -436,12 +436,12 @@ export class ApiClient {
 function getBaseUrl(): string {
   // For browser environments
   if (typeof window !== "undefined") {
-    return (window as any).__FTGO_API_URL__ || "http://localhost:8100";
+    return __FTGO_API_URL__ || "http://localhost:8100";
   }
 
   // For Node.js environments
   if (typeof process !== "undefined" && process.env) {
-    return process.env.FTGO_API_URL || "http://localhost:8100";
+    return process.env.VITE_FTGO_API_URL || "http://localhost:8100";
   }
 
   // Fallback
