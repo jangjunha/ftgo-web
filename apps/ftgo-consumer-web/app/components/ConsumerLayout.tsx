@@ -3,12 +3,12 @@ import { useAuth } from "../lib/auth-context";
 import { useQuery } from "@tanstack/react-query";
 import { consumers } from "@ftgo/util";
 
-interface RestaurantLayoutProps {
+interface ConsumerLayoutProps {
   sidebar?: React.ReactNode;
   children: React.ReactNode;
 }
 
-export function ConsumerLayout({ sidebar, children }: RestaurantLayoutProps) {
+export function ConsumerLayout({ sidebar, children }: ConsumerLayoutProps) {
   const { user } = useAuth();
   const consumer = useQuery({
     queryKey: ["consumers", user?.consumerId],

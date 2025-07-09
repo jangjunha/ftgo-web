@@ -1,9 +1,10 @@
-import { Link, Outlet, useParams } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import { Link, Outlet, useNavigate, useParams } from "react-router";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type { Route } from "./+types/home";
-import { restaurants } from "@ftgo/util";
+import { orders, restaurants } from "@ftgo/util";
 import { ConsumerLayout } from "~/components/ConsumerLayout";
 import { useCart } from "~/lib/cart-context";
+import { useAuth } from "~/lib/auth-context";
 
 export function meta({ params }: Route.MetaArgs) {
   return [
@@ -14,13 +15,37 @@ export function meta({ params }: Route.MetaArgs) {
 
 export default function Restaurant() {
   const { restaurantId } = useParams();
-  const { addItem, items, getTotalItems, getTotalPrice, updateQuantity } =
-    useCart();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const {
+    addItem,
+    items,
+    getTotalItems,
+    getTotalPrice,
+    updateQuantity,
+    clearCart,
+  } = useCart();
 
   const { isLoading, data } = useQuery({
     queryKey: ["restaurant", restaurantId],
     queryFn: () => restaurants.get(restaurantId!),
     enabled: !!restaurantId,
+  });
+
+  const placeOrderMutation = useMutation({
+    mutationFn: ({
+      items,
+      delivery_address,
+    }: {
+      items: { menu_item_id: string; quantity: number }[];
+      delivery_address: string;
+    }) =>
+      orders.create({
+        restaurant_id: restaurantId!,
+        consumer_id: user!.consumerId,
+        items,
+        delivery_address,
+      }),
   });
 
   if (isLoading || data === undefined) {
@@ -50,17 +75,39 @@ export default function Restaurant() {
     });
   };
 
+  const handlePlaceOrder = async () => {
+    if (user == null) {
+      window.alert("You should sign in first to place order");
+      return;
+    }
+    if (!window.confirm(`Order ${getTotalItems()} items?`)) {
+      return;
+    }
+    const { id: orderId } = await placeOrderMutation.mutateAsync({
+      items: items.map((item) => ({
+        menu_item_id: item.menuItemId,
+        quantity: item.quantity,
+      })),
+      delivery_address: "1 Gangnam-daero, Gangnam-gu, Seoul",
+    });
+    window.alert("Order placed!");
+    clearCart();
+    navigate(`/orders/${orderId}`);
+  };
+
   return (
     <div className="py-4">
       <div className="flex justify-between items-center mx-4 mb-4">
-        <h2 className="font-bold text-2xl">Menu</h2>
         {
-          <Link
-            to={`/restaurant/${restaurantId}/cart`}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          <button
+            type="submit"
+            className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-200 text-white w-full text-center p-2 font-bold cursor-pointer"
+            disabled={getTotalItems() === 0 && !placeOrderMutation.isPending}
+            onClick={handlePlaceOrder}
           >
-            Cart ${getTotalPrice().toLocaleString()}
-          </Link>
+            Order {getTotalItems().toLocaleString()} items — $
+            {getTotalPrice().toLocaleString()}
+          </button>
         }
       </div>
 

@@ -199,6 +199,28 @@ export class ApiClient {
     });
   }
 
+  async depositToAccount(
+    consumerId: string,
+    request: schemas.DepositRequest,
+  ): Promise<schemas.DepositResponse> {
+    return this.request(`/consumers/${consumerId}/account/deposit`, {
+      method: "POST",
+      body: JSON.stringify(request),
+      schema: schemas.DepositResponseSchema,
+    });
+  }
+
+  async withdrawFromAccount(
+    consumerId: string,
+    request: schemas.WithdrawRequest,
+  ): Promise<schemas.WithdrawResponse> {
+    return this.request(`/consumers/${consumerId}/account/withdraw`, {
+      method: "POST",
+      body: JSON.stringify(request),
+      schema: schemas.WithdrawResponseSchema,
+    });
+  }
+
   // Restaurant endpoints
   async createRestaurant(
     request: schemas.CreateRestaurantRequest,
@@ -231,14 +253,45 @@ export class ApiClient {
     return this.request("/orders", {
       method: "POST",
       body: JSON.stringify(request),
-      schema: schemas.CreateOrderResponseSchema,
+      schema: schemas.OrderSchema,
     });
   }
 
   async getOrder(id: string): Promise<schemas.CreateOrderResponse> {
     return this.request(`/orders/${id}`, {
       method: "GET",
-      schema: schemas.CreateOrderResponseSchema,
+      schema: schemas.OrderSchema,
+    });
+  }
+
+  async listOrders(
+    options: {
+      consumer_id?: string;
+      restaurant_id?: string;
+      state?: string;
+      first?: number;
+      after?: string;
+      last?: number;
+      before?: string;
+    } = {},
+  ): Promise<schemas.ListOrdersResponse> {
+    const params = new URLSearchParams();
+    if (options.consumer_id) params.set("consumer_id", options.consumer_id);
+    if (options.restaurant_id)
+      params.set("restaurant_id", options.restaurant_id);
+    if (options.state) params.set("state", options.state);
+    if (options.first !== undefined)
+      params.set("first", options.first.toString());
+    if (options.after) params.set("after", options.after);
+    if (options.last !== undefined) params.set("last", options.last.toString());
+    if (options.before) params.set("before", options.before);
+
+    const query = params.toString();
+    const endpoint = `/orders${query ? `?${query}` : ""}`;
+
+    return this.request(endpoint, {
+      method: "GET",
+      schema: schemas.ListOrdersResponseSchema,
     });
   }
 
@@ -413,6 +466,10 @@ export const consumers = {
   get: (id: string, access_token?: string) =>
     defaultClient.getConsumer(id, access_token),
   getAccount: (consumerId: string) => defaultClient.getAccount(consumerId),
+  deposit: (consumerId: string, request: schemas.DepositRequest) =>
+    defaultClient.depositToAccount(consumerId, request),
+  withdraw: (consumerId: string, request: schemas.WithdrawRequest) =>
+    defaultClient.withdrawFromAccount(consumerId, request),
 };
 
 export const restaurants = {
@@ -426,6 +483,8 @@ export const orders = {
   create: (request: schemas.CreateOrderRequest) =>
     defaultClient.createOrder(request),
   get: (id: string) => defaultClient.getOrder(id),
+  list: (options?: Parameters<typeof defaultClient.listOrders>[0]) =>
+    defaultClient.listOrders(options),
 };
 
 export const kitchen = {
