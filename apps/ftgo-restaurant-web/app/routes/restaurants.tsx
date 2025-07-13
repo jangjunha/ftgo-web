@@ -2,7 +2,6 @@ import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import type { Route } from "./+types/restaurants";
 import { restaurants, users } from "@ftgo/util";
-import { Button } from "@ftgo/ui";
 import { RestaurantLayout } from "../components/RestaurantLayout";
 
 export function meta({}: Route.MetaArgs) {
@@ -40,7 +39,7 @@ const Restaurant = ({ id }: { id: string }) => {
 export default function Restaurants() {
   const meQuery = useQuery({
     queryKey: ["me"],
-    queryFn: users.getCurrentUser,
+    queryFn: () => users.getCurrentUser(),
   });
 
   return (

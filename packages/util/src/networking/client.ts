@@ -334,11 +334,13 @@ export class ApiClient {
   async acceptTicket(
     restaurantId: string,
     ticketId: string,
+    request: schemas.AcceptTicketRequest,
   ): Promise<schemas.KitchenTicket> {
     return this.request(
       `/restaurants/${restaurantId}/tickets/${ticketId}/accept`,
       {
         method: "POST",
+        body: JSON.stringify(request),
         schema: schemas.KitchenTicketSchema,
       },
     );
@@ -500,8 +502,11 @@ export const kitchen = {
   ) => defaultClient.listTickets(restaurantId, options),
   getTicket: (restaurantId: string, ticketId: string) =>
     defaultClient.getTicket(restaurantId, ticketId),
-  acceptTicket: (restaurantId: string, ticketId: string) =>
-    defaultClient.acceptTicket(restaurantId, ticketId),
+  acceptTicket: (
+    restaurantId: string,
+    ticketId: string,
+    request: schemas.AcceptTicketRequest,
+  ) => defaultClient.acceptTicket(restaurantId, ticketId, request),
   preparingTicket: (restaurantId: string, ticketId: string) =>
     defaultClient.preparingTicket(restaurantId, ticketId),
   readyForPickupTicket: (restaurantId: string, ticketId: string) =>

@@ -1,36 +1,15 @@
 import { useParams, Link } from "react-router";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import type { Route } from "./+types/tickets";
-import { kitchen } from "@ftgo/util";
+import { kitchen, type KitchenTicket } from "@ftgo/util";
+import State from "~/components/state";
 
 export function meta({ params }: Route.MetaArgs) {
   return [
     { title: `Kitchen Tickets - Restaurant ${params.restaurantId}` },
     { name: "description", content: "Manage kitchen tickets and orders" },
   ];
-}
-
-function getStatusColor(state: string) {
-  switch (state.toLowerCase()) {
-    case "created":
-    case "awaiting_acceptance":
-      return "bg-yellow-100 text-yellow-800";
-    case "accepted":
-      return "bg-blue-100 text-blue-800";
-    case "preparing":
-      return "bg-orange-100 text-orange-800";
-    case "ready_for_pickup":
-      return "bg-green-100 text-green-800";
-    case "picked_up":
-      return "bg-gray-100 text-gray-800";
-    default:
-      return "bg-gray-100 text-gray-800";
-  }
-}
-
-function formatStatus(state: string) {
-  return state.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
 }
 
 export default function Tickets() {
@@ -195,67 +174,15 @@ export default function Tickets() {
               </div>
             )}
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="flex flex-col">
               {tickets.map((ticket) => (
-                <Link
+                <Ticket
+                  id={ticket.id}
+                  restaurantId={restaurantId!!}
                   key={ticket.id}
-                  to={`/restaurants/${restaurantId}/tickets/${ticket.id}`}
-                  className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow"
-                >
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        Ticket #{ticket.id.slice(-8)}
-                      </h3>
-                      <span
-                        className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(ticket.state)}`}
-                      >
-                        {formatStatus(ticket.state)}
-                      </span>
-                    </div>
-
-                    <div className="space-y-2">
-                      {ticket.line_items.map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex justify-between text-sm"
-                        >
-                          <span className="text-gray-600">
-                            {item.quantity}x {item.name}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="mt-4 text-xs text-gray-500">
-                      {ticket.order_id && (
-                        <div>Order: {ticket.order_id.slice(-8)}</div>
-                      )}
-                      {ticket.accepted_at && (
-                        <div>
-                          Accepted:{" "}
-                          {new Date(ticket.accepted_at).toLocaleTimeString()}
-                        </div>
-                      )}
-                      {ticket.preparing_at && (
-                        <div>
-                          Started:{" "}
-                          {new Date(ticket.preparing_at).toLocaleTimeString()}
-                        </div>
-                      )}
-                      {ticket.ready_for_pickup_at && (
-                        <div>
-                          Ready:{" "}
-                          {new Date(
-                            ticket.ready_for_pickup_at,
-                          ).toLocaleTimeString()}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </Link>
+                />
               ))}
-            </div>
+            </ul>
 
             {isFetchingNextPage && (
               <div className="text-center py-8">
@@ -286,3 +213,100 @@ export default function Tickets() {
     </div>
   );
 }
+
+const Ticket = ({ id, restaurantId }: { id: string; restaurantId: string }) => {
+  const { data, refetch } = useQuery({
+    queryKey: ["tickets", id],
+    queryFn: () => kitchen.getTicket(restaurantId, id),
+  });
+  const { mutateAsync: acceptTicket } = useMutation({
+    mutationFn: (readyBy: string) =>
+      kitchen.acceptTicket(restaurantId, id, { ready_by: readyBy }),
+    async onSuccess() {
+      await refetch();
+    },
+  });
+  const { mutateAsync: preparingTicket } = useMutation({
+    mutationFn: () => kitchen.preparingTicket(restaurantId, id),
+    async onSuccess() {
+      await refetch();
+    },
+  });
+  const { mutateAsync: readyForPickupTicket } = useMutation({
+    mutationFn: () => kitchen.readyForPickupTicket(restaurantId, id),
+    async onSuccess() {
+      await refetch();
+    },
+  });
+
+  if (data === undefined) {
+    return (
+      <li>
+        <p>Loading {id}</p>
+      </li>
+    );
+  }
+
+  const { state, ready_by: readyBy, line_items: lineItems } = data;
+  return (
+    <li className="flex">
+      <Link to={`./${id}`} className="flex-1 p-2 flex flex-col bg-white">
+        <div>
+          {/* <span className="font-mono bg-black text-white px-1">{sequence}</span> */}
+          <div className="inline ml-2">
+            <State state={state} />
+            {state === "ACCEPTED" && readyBy && (
+              <span className="ml-1">
+                Ready by {new Date(readyBy).toLocaleTimeString()}
+              </span>
+            )}
+          </div>
+        </div>
+        <p>{lineItems[0].name}...</p>
+      </Link>
+      <div>
+        {state === "AWAITING_ACCEPTANCE" && (
+          <button
+            type="button"
+            className="bg-fuchsia-500 text-white h-full p-2 cursor-pointer"
+            onClick={async () => {
+              const minutes = parseInt(
+                prompt("Expected cooking time (min)", "15") ?? "",
+              );
+              if (Number.isNaN(minutes)) {
+                return;
+              }
+              const readyBy = new Date();
+              readyBy.setTime(readyBy.getTime() + 1000 * 60 * minutes);
+              await acceptTicket(readyBy.toISOString());
+            }}
+          >
+            Accept
+          </button>
+        )}
+        {state === "ACCEPTED" && (
+          <button
+            type="button"
+            className="bg-pink-500 text-white h-full p-2 cursor-pointer"
+            onClick={async () => {
+              await preparingTicket();
+            }}
+          >
+            Start Cook
+          </button>
+        )}
+        {state === "PREPARING" && (
+          <button
+            type="button"
+            className="bg-rose-500 text-white h-full p-2 cursor-pointer"
+            onClick={async () => {
+              await readyForPickupTicket();
+            }}
+          >
+            Request Pickup
+          </button>
+        )}
+      </div>
+    </li>
+  );
+};

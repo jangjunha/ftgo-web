@@ -230,6 +230,18 @@ export type OrderEdge = v.InferOutput<typeof OrderEdgeSchema>;
 export type ListOrdersResponse = v.InferOutput<typeof ListOrdersResponseSchema>;
 
 // Kitchen schemas
+export const TicketStateSchema = v.picklist([
+  "CREATE_PENDING",
+  "AWAITING_ACCEPTANCE",
+  "ACCEPTED",
+  "PREPARING",
+  "READY_FOR_PICKUP",
+  "PICKED_UP",
+  "CANCEL_PENDING",
+  "CANCELLED",
+  "REVISION_PENDING",
+] as const);
+
 export const TicketLineItemSchema = v.object({
   quantity: v.number(),
   menu_item_id: v.string(),
@@ -239,7 +251,7 @@ export const TicketLineItemSchema = v.object({
 export const KitchenTicketSchema = v.object({
   id: UuidSchema,
   restaurant_id: UuidSchema,
-  state: v.string(),
+  state: TicketStateSchema,
   line_items: v.array(TicketLineItemSchema),
   order_id: v.nullable(UuidSchema),
   accepted_at: v.nullable(DateTimeSchema),
@@ -257,11 +269,19 @@ export const ListTicketsResponseSchema = v.object({
   edges: v.array(KitchenTicketEdgeSchema),
 });
 
+export const AcceptTicketRequestSchema = v.object({
+  ready_by: DateTimeSchema,
+});
+
+export type TicketState = v.InferOutput<typeof TicketStateSchema>;
 export type TicketLineItem = v.InferOutput<typeof TicketLineItemSchema>;
 export type KitchenTicket = v.InferOutput<typeof KitchenTicketSchema>;
 export type KitchenTicketEdge = v.InferOutput<typeof KitchenTicketEdgeSchema>;
 export type ListTicketsResponse = v.InferOutput<
   typeof ListTicketsResponseSchema
+>;
+export type AcceptTicketRequest = v.InferOutput<
+  typeof AcceptTicketRequestSchema
 >;
 
 // Delivery schemas
